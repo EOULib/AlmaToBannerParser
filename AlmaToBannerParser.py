@@ -32,7 +32,7 @@ __author__="Jeremiah Kellogg"
 __copyright__="Copyright 2019, Eastern Oregon University"
 __credits__="Jeremiah Kellogg"
 __license__="MIT License"
-__version__="0.1.0"
+__version__="0.1.1"
 __maintainer__="Jeremiah Kellogg"
 __email__="jkellogg@eou.edu"
 __status__="Development"
@@ -44,29 +44,10 @@ Invoice_data = open('alma_invoice_' + today.strftime('%Y%m%d') + '.csv', 'w')
 csvwriter = csv.writer(Invoice_data)
 
 ## Populate csv column headers
-invoice_column_header = []
-invoice_number = 'INVOICE_NUMBER'
-invoice_column_header.append(invoice_number)
-vendor_id = 'VENDOR_ID'
-invoice_column_header.append(vendor_id)
-payment_address = 'ATYPE_SEQ'
-invoice_column_header.append(payment_address)
-invoice_date = 'INVOICE_DATE'
-invoice_column_header.append(invoice_date)
-sum = 'INVOICE_TOTAL'
-invoice_column_header.append(sum)
-payment_due_date = 'PMT_DUE_DATE'
-invoice_column_header.append(payment_due_date)
-invoice_line_number = 'PO_SEQ'
-invoice_column_header.append(invoice_line_number)
-external_id = 'ACCOUNT_INDEX'
-invoice_column_header.append(external_id)
-price = 'UNIT_PRICE'
-invoice_column_header.append(price)
-shipment_amount = 'ADDL_CHG'
-invoice_column_header.append(shipment_amount)
-po_line_number = 'LINE_DESC'
-invoice_column_header.append(po_line_number)
+invoice_column_header = [
+	'INVOICE_NUMBER', 'VENDOR_ID', 'ATYPE_SEQ', 'INVOICE_DATE', 'INVOICE_TOTAL', 'PMT_DUE_DATE',
+	'PO_SEQ', 'ACCOUNT_INDEX', 'UNIT_PRICE', 'ADDL_CHG', 'LINE_DESC'
+]
 csvwriter.writerow(invoice_column_header)
 ## End csv headers
 
@@ -74,7 +55,6 @@ csvwriter.writerow(invoice_column_header)
 namespace = '{http://com/exlibris/repository/acq/invoice/xmlbeans}'  # namespace is declared so it can replace the url in xml data paths
 list_of_invoices = root.findall(namespace+'invoice_list/'+namespace+'invoice')
 for invoice in list_of_invoices:
-    invoice_row = []
     invoice_number = invoice.find(namespace+'invoice_number').text
     sum = invoice.find(namespace+'invoice_amount/'+namespace+'sum').text
     vendor_FinancialSys_Code = invoice.find(namespace+'vendor_FinancialSys_Code').text
@@ -86,13 +66,6 @@ for invoice in list_of_invoices:
     payment_due_date = (creationDate_formatted + datetime.timedelta(days=7)).strftime('%Y%m%d')
     payment_method = invoice.find(namespace+'payment_method').text  #If this has a value other than ACCOUNTINGDEPARTMENT we don't want the row written to csv
     shipment_amount = invoice.find(namespace+'additional_charges/'+namespace+'shipment_amount').text
-    invoice_row.append(invoice_number)
-    invoice_row.append(vendor_id)
-    invoice_row.append(payment_address)
-    invoice_row.append(invoice_date_formatted)
-    invoice_row.append(sum)
-    invoice_row.append(payment_due_date)
-    ## Begin parsing individual POLs
     for invoice_line_list in invoice:
         invoice_line = invoice_line_list.findall(namespace+'invoice_line')
         for data in invoice_line:
@@ -105,21 +78,14 @@ for invoice in list_of_invoices:
             else:
                 additional = 0
             po_line_number = data.find(namespace+'po_line_info/'+namespace+'po_line_number').text
-            invoice_row.append(line_number)
-            invoice_row.append(external_id)
-            invoice_row.append(price)
-            invoice_row.append(additional)
-            invoice_row.append(po_line_number)
             # Only write the row's contents to the csv if the payment_method value is ACCOUNTINGDEPARTMENT.  The other 3 possible
             # values: CORRECTION, CREDITCARD, and DEPOSITACCOUNT shouldn't be sent to Banner
             if payment_method == 'ACCOUNTINGDEPARTMENT':
-                csvwriter.writerow(invoice_row )
-            #  Pop the last 5 values off the list so if there's more than one POL the list doesn't retain data from previous POLs
-            invoice_row.pop()
-            invoice_row.pop()
-            invoice_row.pop()
-            invoice_row.pop()
-            invoice_row.pop()
+				invoice_row = [
+				invoice_number, vendor_id, payment_address, invoice_date_formatted, sum, payment_due_date,
+				line_number, external_id, price, additional, po_line_number
+				]
+				csvwriter.writerow(invoice_row)
     ## End parsing individual POLs
 ## End adding xml data to csv
 Invoice_data.close()
