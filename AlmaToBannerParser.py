@@ -10,7 +10,9 @@ paths as you see fit.  This program may need to be modified to fit your
 institution's needs.  It is advised that you work with your Banner analysts and
 programmers to determine what the csv output should look like for importing into
 Banner.  Logging functionality is built into the script for troubleshooting
-purposes.
+purposes.  An example Alma invoice export file can be accessed and used for
+testing purposes on the Ex Libris Developer Network site:
+https://developers.exlibrisgroup.com/alma/apis/docs/xsd/invoice_payment.xsd/
 License Info:
 Copyright 2019 Eastern Oregon University
 Permission is hereby granted, free of charge, to any person obtaining a copy of
