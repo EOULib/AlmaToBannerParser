@@ -140,8 +140,9 @@ try:
 		mtime = lambda f: os.stat(os.path.join(store_old_export, f)).st_mtime
 		return list(sorted(os.listdir(store_old_export), key=mtime))
 	del_list = sorted_ls(store_old_export)[0:(len(sorted_ls(store_old_export))-max_xml_files_to_keep)]  #list of old xml files
-	for dfile in del_list:
-		os.remove(store_old_export + dfile)
+	if len(del_list) > max_xml_files_to_keep:
+		for dfile in del_list:
+			os.remove(store_old_export + dfile)
 except Exception:
 	logging.error("A fatal error occured: ", exc_info=True)
 ##  End error checking using try and except blocks
