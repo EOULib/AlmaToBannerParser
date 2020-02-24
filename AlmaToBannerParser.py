@@ -51,10 +51,10 @@ __author__="Jeremiah Kellogg"
 __copyright__="Copyright 2019, Eastern Oregon University"
 __credits__="Jeremiah Kellogg"
 __license__="MIT License"
-__version__="0.2.1"
+__version__="1.0.0"
 __maintainer__="Jeremiah Kellogg"
 __email__="jkellogg@eou.edu"
-__status__="Development"
+__status__="Beta"
 
 today = datetime.date.today()  #Get current date for .xml, .log, & .csv naming conventions
 
@@ -152,4 +152,5 @@ try:
 			os.remove(store_old_export + dfile)
 except Exception:
 	logging.error("A fatal error occured: ", exc_info=True)
+        store_old_export = './'
 ##  End error checking using try and except blocks
